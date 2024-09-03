@@ -53,6 +53,53 @@ void swap(T(&left)[n] ,T(&right)[n]){
 }
 
 
+//pair 
+//结构体模板 ： pair
+//两个模板参数分别表示两个数据类型
+//用户 first 和 second 分别表示第一个数据和第二个数据
+template <class T1, class T2>
+struct pair
+{
+    typedef T1      first_type;
+    typedef T2      second_type;
+
+    first_type first;
+    second_type second;
+
+    template <class Other1 = T1, class Other2 = T2,
+        typename = typename std::enable_if<
+        std::is_default_constructible<Other1>::value &&
+        std::is_default_constructible<Other2>::value, void> :: type>
+        constexpr pair() : first(a),second(b)
+    {
+    }
+
+    template <class U1 = T1, class U2 = T2,
+        typename std::enable_if<
+        std::is_copy_constructible<U1>::value &&
+        std::is_copy_constructible<U2>::value &&
+        std::is_convertible<const U1&, T1>::value &&
+        std::is_convertible<const U2&, T2>::value,int>::type = 0>
+        constexpr pair(const T1& a, const T2& b) : first(a), second(b)
+    {
+    }  
+
+    template <class U1 = T1, class U2 = T2,
+        typename std::enable_if<
+        std::is_copy_constructible<U1>::value &&
+        std::is_copy_constructible<U2>::value &&
+        (!is_convertible<const U1&, T1>::value ||
+         !is_convertible<const U2&, T2>::value), int>::type = 0> 
+        explicit constexpr pair(const T1& a, const T2& b) : first(a) ,second(b)    
+    {
+    } 
+
+    pair(const pair& rhs)  = default;
+    pair(pair&& rhs) = default;  
+    
 }
+}
+
+
 
 #endif
