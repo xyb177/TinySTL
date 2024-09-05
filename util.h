@@ -119,6 +119,99 @@ struct pair
         explicit constexpr pair(Other1&& a, Other2&& b) : first(tinystl::forward<Other1>(a)), second(tinystl::forward<Other2>(b))
     {
     }   
+
+    // implicit constructiable for other pair
+    template <class Other1 ,class Other2>
+        typename std::enable_if<
+        std::is_constructible<T1, const Other1&>::value &&
+        std::is_constructible<T2, const Other2&>::value &&
+        std::is_convertible<const Other1&, T1>::value &&
+        std::is_convertible<const Other2&, T2>::value, int>::type = 0>
+        constexpr pair(const pair<Other1, Ohter2>& other)
+        : first(other.first),second(other.second)
+        {
+        }
+
+    // explicit constructiable for other pair
+    template <class Other1 ,class Other2>
+        typename std::enable_if<
+        std::is_constructible<T1, const Other&>::value &&
+        std::is_constructible<T2, const Other2&>::value &&
+        (!std::is_convertible<const Other1&, T1>::value ||
+         !std::is_convertible<const Other2&, T2>::value), int>::type = 0>
+         explicit pair(const pair<Other1, Other2>& other)
+         : first(other.first),second(other.second)
+         {
+         }
+
+
+    template <class Other1 ,class Other2>
+        typename std::enable_if<
+        std::is_constructible<T1, const Other1&>::value &&
+        std::is_constructible<T2, const Other2&>::value &&
+        std::is_convertible<const Other1&, T1>::value &&
+        std::is_convertible<const Other2&, T2>::value, int>::type = 0>
+        constexpr pair(const pair<Other1, Ohter2>& other)
+        : first(tinystl::forward<Other1>(other.first)),second(tinystl:: forward<Other2>(other.second))
+        {
+        }
+
+    template <class Other1 ,class Other2>
+        typename std::enable_if<
+        std::is_constructible<T1, const Other&>::value &&
+        std::is_constructible<T2, const Other2&>::value &&
+        (!std::is_convertible<const Other1&, T1>::value ||
+         !std::is_convertible<const Other2&, T2>::value), int>::type = 0>
+         explicit pair(const pair<Other1, Other2>&& other)
+         : first(tinystl::forward<Other1>(other.first)),second(tinystl:: forward<Other2>(other.second))
+         {
+         }
+
+
+    pair& operator=(const pair& rhs){
+        if(this != &rhs){
+            first = rhs.first;
+            second = rhs.second;
+        }
+        return *this;
+    }
+
+    pair& operator=(const pair&& rhs){
+        if(this!= &rhs){
+            first = tinystl.move(rhs.first);
+            second = tinystl.second(rhs.second);
+        }
+        return *this;
+    } 
+
+    template<class Other1, class Other2>
+    pair& operator=(const pair<Other1,Other2>& other){
+       first = other.first;
+       second = other.second;
+       return *this;
+    }
+
+    template<class Other1 ,class Other2>
+    pair& operator=(const pair<Other1,Other2>&& other){
+        first = tinystl.move(other.first);
+        second = tinystl.move(other.second);
+        return *this;
+    }
+
+    void swap(pair& other){
+        if(this!=&other){
+            tinystl::swap(first,other.first);
+            tinystl::swap(second,other.second);
+        }
+    }
+
+    ~pair() = default;
+
+    template<class T1, class T2>
+    bool operator==(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs){
+        return lhs.first == rhs.first && lhs.second == rhs.second;
+    }
+    
 }
 }
 
